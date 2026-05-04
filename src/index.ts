@@ -42,7 +42,7 @@ World.create(container, {
     near: 0.05,
     far: 50,
   },
-}).then((world) => {
+}).then(async (world) => {
   // ── Cross-system signals ──────────────────────────────────────────────────
   (world.globals as Record<string, unknown>).remotePowerToggle = signal<number>(0);
   (world.globals as Record<string, unknown>).remoteChannelNext = signal<number>(0);
@@ -57,9 +57,11 @@ World.create(container, {
 
   // ── Scene geometry ────────────────────────────────────────────────────────
   const { group: roomGroup, ambientLight, directionalLight } = buildRoomMesh();
-  const chairGroup = buildArmchairMesh();
-  const { group: tvGroup, screenMesh, glowLight } = buildTVMesh();
-  const remoteGroup = buildRemoteMesh();
+  const [chairGroup, { group: tvGroup, screenMesh, glowLight }, remoteGroup] = await Promise.all([
+    buildArmchairMesh(),
+    buildTVMesh(),
+    buildRemoteMesh(),
+  ]);
 
   world.scene.add(roomGroup);
   world.scene.add(chairGroup);

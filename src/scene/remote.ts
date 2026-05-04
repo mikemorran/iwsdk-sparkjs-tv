@@ -1,41 +1,32 @@
-import { BoxGeometry, CylinderGeometry, Group, Mesh, MeshStandardMaterial } from '@iwsdk/core';
+import { Box3, Group, Vector3 } from '@iwsdk/core';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-// On top of right armrest: armrest top y=0.74, x center=0.495, seat midpoint z=0
-export const REMOTE_REST_POSITION: [number, number, number] = [0.48, 0.75, -0.16];
-export const REMOTE_REST_ROTATION: [number, number, number] = [0, 3, 0];
+// On top of right armrest (chair faces -Z toward TV): armrest at +X, slightly behind seat center
+export const REMOTE_REST_POSITION: [number, number, number] = [0.33, 0.58, -0.17];
+export const REMOTE_REST_ROTATION: [number, number, number] = [0, 0.13, 0];
 
-export function buildRemoteMesh(): Group {
+// Target longest dimension to match original ~0.18m length
+const TARGET_LENGTH = 0.18;
+
+export async function buildRemoteMesh(): Promise<Group> {
+  const loader = new GLTFLoader();
+  const gltf = await loader.loadAsync('/gltf/soviet_tv_remote_control__low_poly_game_asset.glb');
+  const model = gltf.scene;
+
+  // Scale by longest axis to match original remote length
+  const box = new Box3().setFromObject(model);
+  const size = box.getSize(new Vector3());
+  const longest = Math.max(size.x, size.y, size.z);
+  const scale = TARGET_LENGTH / longest;
+  model.scale.setScalar(scale);
+
+  // Center model at local origin
+  const box2 = new Box3().setFromObject(model);
+  const center = box2.getCenter(new Vector3());
+  model.position.sub(center);
+
   const group = new Group();
-
-  const bodyMat = new MeshStandardMaterial({ color: '#2A2A2A', roughness: 0.7 });
-  const powerBtnMat = new MeshStandardMaterial({ color: '#CC2222', roughness: 0.6 });
-  const channelBtnMat = new MeshStandardMaterial({ color: '#CCCCCC', roughness: 0.5 });
-
-  // Body: 0.05w × 0.015h × 0.18d
-  const body = new Mesh(new BoxGeometry(0.05, 0.015, 0.18), bodyMat);
-  group.add(body);
-
-  // Power button: small red cylinder at top (local +Z = top of remote)
-  const powerBtn = new Mesh(new CylinderGeometry(0.008, 0.008, 0.006, 8), powerBtnMat);
-  powerBtn.rotation.x = Math.PI / 2;
-  powerBtn.position.set(0, 0.011, 0.07);
-  group.add(powerBtn);
-
-  // 6 channel buttons in a 2×3 grid below power button
-  const btnOffsets: [number, number][] = [
-    [-0.012, 0.04], [0.012, 0.04],
-    [-0.012, 0.01], [0.012, 0.01],
-    [-0.012, -0.02], [0.012, -0.02],
-  ];
-
-  for (const [x, z] of btnOffsets) {
-    const btn = new Mesh(new CylinderGeometry(0.005, 0.005, 0.005, 8), channelBtnMat);
-    btn.rotation.x = Math.PI / 2;
-    btn.position.set(x, 0.011, z);
-    group.add(btn);
-  }
-
-  // Rest position per spec
+  group.add(model);
   group.position.set(...REMOTE_REST_POSITION);
   group.rotation.set(...REMOTE_REST_ROTATION);
 

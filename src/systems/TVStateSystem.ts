@@ -1,6 +1,7 @@
 import { createSystem } from '@iwsdk/core';
 import type { Signal } from '@preact/signals-core';
 import { TVState } from '../components.js';
+import { soundManager } from '../audio/soundManager.js';
 
 export interface TVTransitionEvent {
   type: 'powerOn' | 'powerOff' | 'channelChange';
@@ -34,10 +35,14 @@ export class TVStateSystem extends createSystem({
           tvEntity.setValue(TVState, 'activeChannel', 1);
           tvEntity.setValue(TVState, 'isTransitioning', true);
           tvEventSig.value = { type: 'powerOn', channel: 1, id: ++_eventId };
+          soundManager.playPowerOn();
+          soundManager.startStaticLoop();
         } else {
           tvEntity.setValue(TVState, 'isPowered', false);
           tvEntity.setValue(TVState, 'isTransitioning', true);
           tvEventSig.value = { type: 'powerOff', channel: 0, id: ++_eventId };
+          soundManager.playPowerOff();
+          soundManager.stopStaticLoop();
         }
       }),
     );
@@ -57,6 +62,7 @@ export class TVStateSystem extends createSystem({
         tvEntity.setValue(TVState, 'activeChannel', next);
         tvEntity.setValue(TVState, 'isTransitioning', true);
         tvEventSig.value = { type: 'channelChange', channel: next, id: ++_eventId };
+        soundManager.playChannelChange();
       }),
     );
   }

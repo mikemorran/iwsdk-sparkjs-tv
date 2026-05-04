@@ -2,6 +2,7 @@ import { createSystem, InputComponent, OneHandGrabbable, Pressed, Quaternion, Ve
 import type { Signal } from '@preact/signals-core';
 import { RemoteControl } from '../components.js';
 import { REMOTE_REST_POSITION } from '../scene/remote.js';
+import { soundManager } from '../audio/soundManager.js';
 
 export class RemoteSystem extends createSystem({
   remoteHeld: { required: [RemoteControl, OneHandGrabbable, Pressed] },
@@ -46,9 +47,11 @@ export class RemoteSystem extends createSystem({
     );
 
     if (aNow && !this.aWasDown) {
+      soundManager.playRemoteClick();
       (this.globals.remotePowerToggle as Signal<number>).value++;
     }
     if (bNow && !this.bWasDown) {
+      soundManager.playRemoteClick();
       (this.globals.remoteChannelNext as Signal<number>).value++;
     }
 

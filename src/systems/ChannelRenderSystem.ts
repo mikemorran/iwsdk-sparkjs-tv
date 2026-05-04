@@ -97,7 +97,12 @@ export class ChannelRenderSystem extends createSystem({
     // Each channel gets its own SparkRenderer (required for GPU splat rendering)
     this.channels = CHANNEL_CONFIG.map((cfg) => {
       const sparkRenderer = new SparkRenderer({ renderer: this.renderer });
-      return createChannelScene(cfg, sparkRenderer);
+      const ch = createChannelScene(cfg, sparkRenderer);
+      // Ensure SparkRenderer sorts splats for the channel camera, not the XR headset camera.
+      // Without this, the sort order is driven by the headset position and causes black patches
+      // on splats when the viewer is close to the TV screen.
+      ch.sparkRenderer.viewpoint.camera = ch.camera;
+      return ch;
     });
 
     this.screenMesh = this.globals.screenMesh as Mesh;
