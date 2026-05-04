@@ -1,0 +1,55 @@
+{
+  "hash": "bb49316c",
+  "configHash": "6c7b76bf",
+  "lockfileHash": "c3b7b0b5",
+  "browserHash": "fc631831",
+  "optimized": {
+    "@preact/signals-core": {
+      "src": "../../node_modules/@preact/signals-core/dist/signals-core.module.js",
+      "file": "@preact_signals-core.js",
+      "fileHash": "831d8040",
+      "needsInterop": false
+    },
+    "@iwsdk/core": {
+      "src": "../../node_modules/@iwsdk/core/dist/index.js",
+      "file": "@iwsdk_core.js",
+      "fileHash": "0a439ac5",
+      "needsInterop": false
+    },
+    "@iwsdk/core/dist/grab/handles.js": {
+      "src": "../../node_modules/@iwsdk/core/dist/grab/handles.js",
+      "file": "@iwsdk_core_dist_grab_handles__js.js",
+      "fileHash": "893649c4",
+      "needsInterop": false
+    },
+    "@sparkjsdev/spark": {
+      "src": "../../node_modules/@sparkjsdev/spark/dist/spark.module.js",
+      "file": "@sparkjsdev_spark.js",
+      "fileHash": "e64f0ef9",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-FTTCZC3D": {
+      "file": "chunk-FTTCZC3D.js"
+    },
+    "chunk-F2OP7AQJ": {
+      "file": "chunk-F2OP7AQJ.js"
+    },
+    "chunk-5NHNRKEW": {
+      "file": "chunk-5NHNRKEW.js"
+    },
+    "dist-EK5QIPU3": {
+      "file": "dist-EK5QIPU3.js"
+    },
+    "worker-DCVMVMRZ": {
+      "file": "worker-DCVMVMRZ.js"
+    },
+    "HavokPhysics_es-C2346WGJ": {
+      "file": "HavokPhysics_es-C2346WGJ.js"
+    },
+    "chunk-UVKRO5ER": {
+      "file": "chunk-UVKRO5ER.js"
+    }
+  }
+}
