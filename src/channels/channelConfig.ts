@@ -37,8 +37,8 @@ export const CHANNEL_CONFIG: ChannelConfig[] = [
     cameraMode: 'orbit',
   },
   {
-    url: "https://sparkjs.dev/assets/splats/food/gyro.spz",
-    cameraPosition: [0, 14, 1],
+    url: "https://sparkjs.dev/assets/splats/robot-head.spz",
+    cameraPosition: [0, 2, 4],
     cameraLookAt: [0, 0, 0],
     splatRotation: [Math.PI, 0, 0],
     glowColor: '#FFE8CC',
