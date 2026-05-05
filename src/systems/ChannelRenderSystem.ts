@@ -123,6 +123,10 @@ export class ChannelRenderSystem extends createSystem({
   update(delta: number) {
     this.elapsedTime += delta;
 
+    // Always advance uTime so animated static plays during transitions even when off
+    const screenUniforms = this.screenMat.uniforms as Record<string, { value: unknown }>;
+    screenUniforms['uTime'].value = this.elapsedTime;
+
     const tvEntity = this.queries.tv.entities.values().next().value;
     if (!tvEntity) return;
 
@@ -148,8 +152,7 @@ export class ChannelRenderSystem extends createSystem({
     renderer.setRenderTarget(prevTarget);
 
     // Update screen shader texture
-    const u = this.screenMat.uniforms as Record<string, { value: unknown }>;
-    u['uTexture'].value = this.tvRenderTarget.texture;
+    screenUniforms['uTexture'].value = this.tvRenderTarget.texture;
   }
 
   // Expose channels so TVTransitionSystem can access splats

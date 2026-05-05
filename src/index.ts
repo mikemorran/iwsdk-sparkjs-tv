@@ -12,7 +12,7 @@ import { buildRoomMesh } from './scene/room.js';
 import { buildArmchairMesh } from './scene/armchair.js';
 import { buildTVMesh } from './scene/television.js';
 import { buildRemoteMesh } from './scene/remote.js';
-import { createStaticNoiseTexture, createScreenMaterial } from './fx/screenShader.js';
+import { createScreenMaterial } from './fx/screenShader.js';
 import { RemoteSystem } from './systems/RemoteSystem.js';
 import { TVStateSystem } from './systems/TVStateSystem.js';
 import { ChannelRenderSystem } from './systems/ChannelRenderSystem.js';
@@ -21,6 +21,7 @@ import { GlowLightSystem } from './systems/GlowLightSystem.js';
 import { GazeTimerSystem } from './systems/GazeTimerSystem.js';
 import { RoomColorSystem } from './systems/RoomColorSystem.js';
 import { DebugOverlaySystem } from './systems/DebugOverlaySystem.js';
+import { AntennaeLightningSystem } from './systems/AntennaeLightningSystem.js';
 import type { TVTransitionEvent } from './systems/TVStateSystem.js';
 
 const container = document.getElementById('scene-container') as HTMLDivElement;
@@ -70,8 +71,7 @@ World.create(container, {
   world.scene.add(directionalLight);
 
   // Build screen shader material and replace default material
-  const staticTex = createStaticNoiseTexture();
-  const screenMat = createScreenMaterial(staticTex);
+  const screenMat = createScreenMaterial();
   screenMesh.material = screenMat;
 
   // ── Shared refs for systems ───────────────────────────────────────────────
@@ -101,7 +101,8 @@ World.create(container, {
     .registerSystem(GlowLightSystem)
     .registerSystem(GazeTimerSystem)
     .registerSystem(RoomColorSystem)
-    .registerSystem(DebugOverlaySystem);
+    .registerSystem(DebugOverlaySystem)
+    .registerSystem(AntennaeLightningSystem);
 
   // ── Landing screen wiring ─────────────────────────────────────────────────
   const overlay = document.getElementById('landing-overlay');

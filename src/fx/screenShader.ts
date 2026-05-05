@@ -1,19 +1,9 @@
-import { CanvasTexture, DoubleSide, ShaderMaterial, Texture } from '@iwsdk/core';
+import { CanvasTexture, DoubleSide, ShaderMaterial } from '@iwsdk/core';
 
-export function createStaticNoiseTexture(size = 256): CanvasTexture {
+export function createStaticNoiseTexture(): CanvasTexture {
   const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d')!;
-  const imageData = ctx.createImageData(size, size);
-  for (let i = 0; i < imageData.data.length; i += 4) {
-    const v = Math.floor(Math.random() * 120 + 40);
-    imageData.data[i] = v;
-    imageData.data[i + 1] = v;
-    imageData.data[i + 2] = v;
-    imageData.data[i + 3] = 255;
-  }
-  ctx.putImageData(imageData, 0, 0);
+  canvas.width = 1;
+  canvas.height = 1;
   return new CanvasTexture(canvas);
 }
 
@@ -27,17 +17,29 @@ const vertexShader = /* glsl */ `
 
 const fragmentShader = /* glsl */ `
   uniform sampler2D uTexture;
-  uniform sampler2D uStaticTex;
   uniform float uStaticBlend;
   uniform float uCollapse;
   uniform float uScanlineWipe;
   uniform float uScanlineWidth;
+  uniform float uTime;
+  uniform float uBlackout;
   varying vec2 vUv;
 
+  float hash21(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * vec3(443.897, 441.423, 437.195));
+    p3 += dot(p3, p3.yzx + 19.19);
+    return fract((p3.x + p3.y) * p3.z);
+  }
+
   void main() {
+    if (uBlackout > 0.5) {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+      return;
+    }
+
     vec2 uv = vUv;
 
-    // Vertical collapse effect (CRT phosphor collapse): squash UV toward center
+    // Vertical collapse (CRT phosphor)
     if (uCollapse > 0.0) {
       float squash = 1.0 - uCollapse;
       uv.y = (uv.y - 0.5) * max(squash, 0.001) + 0.5;
@@ -48,10 +50,16 @@ const fragmentShader = /* glsl */ `
     }
 
     vec4 channelColor = texture2D(uTexture, uv);
-    vec4 staticColor  = texture2D(uStaticTex, uv * 4.0);
-    vec4 color = mix(channelColor, staticColor, uStaticBlend);
 
-    // Scanline wipe: bright horizontal line sweeping top→bottom
+    // Animated static: per-frame procedural noise
+    float frame = floor(uTime * 30.0);
+    float noise = hash21(floor(uv * 120.0) / 120.0 + vec2(frame * 0.1273, frame * 0.3147));
+    float noiseVal = noise * 0.85 + 0.1;
+    vec4 animStatic = vec4(noiseVal, noiseVal, noiseVal, 1.0);
+
+    vec4 color = mix(channelColor, animStatic, uStaticBlend);
+
+    // Scanline wipe (power-on effect)
     if (uScanlineWipe > 0.0 && uScanlineWipe < 1.0) {
       float lineY = 1.0 - uScanlineWipe;
       float dist = abs(uv.y - lineY);
@@ -64,22 +72,26 @@ const fragmentShader = /* glsl */ `
 `;
 
 export interface ScreenUniforms {
-  uTexture: { value: Texture };
-  uStaticTex: { value: Texture };
+  uTexture: { value: unknown };
   uStaticBlend: { value: number };
   uCollapse: { value: number };
   uScanlineWipe: { value: number };
   uScanlineWidth: { value: number };
+  uTime: { value: number };
+  uBlackout: { value: number };
 }
 
-export function createScreenMaterial(staticTex: CanvasTexture): ShaderMaterial {
+export function createScreenMaterial(): ShaderMaterial {
+  const placeholder = createStaticNoiseTexture();
+
   const uniforms: ScreenUniforms = {
-    uTexture: { value: staticTex },
-    uStaticTex: { value: staticTex },
-    uStaticBlend: { value: 1.0 }, // Start fully static (off)
+    uTexture: { value: placeholder },
+    uStaticBlend: { value: 0.0 },
     uCollapse: { value: 0.0 },
     uScanlineWipe: { value: 0.0 },
     uScanlineWidth: { value: 0.03 },
+    uTime: { value: 0.0 },
+    uBlackout: { value: 1.0 }, // Start black — TV is off
   };
 
   return new ShaderMaterial({

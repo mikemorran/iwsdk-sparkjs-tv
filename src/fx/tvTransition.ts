@@ -46,6 +46,8 @@ export async function playPowerOn(
   const u = uniforms(screenMat);
   const targetGlowColor = new Color(CHANNEL_CONFIG[channelIndex].glowColor);
 
+  // Lift blackout so static is visible before the flicker begins
+  u.uBlackout.value = 0;
   splat.opacity = 0;
 
   // Flicker: 3 rapid opacity pulses on static
@@ -127,7 +129,8 @@ export async function playPowerOff(
 
   // Cut to black
   u.uCollapse.value = 0;
-  u.uStaticBlend.value = 1.0;
+  u.uStaticBlend.value = 0.0;
+  u.uBlackout.value = 1.0;
   glowLight.intensity = 0;
 }
 
