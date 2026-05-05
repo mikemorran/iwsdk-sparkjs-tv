@@ -100,7 +100,7 @@ function drawDebug(
   // POWER section
   ctx.font = '11px "Courier New", monospace';
   ctx.fillStyle = '#336644';
-  ctx.fillText('POWER', 40, 80);
+  ctx.fillText('POWER (A)', 40, 80);
   drawLED(ctx, 60, 100, isPowered);
   ctx.font = 'bold 13px "Courier New", monospace';
   ctx.fillStyle = isPowered ? '#33FF66' : '#553322';
@@ -117,7 +117,7 @@ function drawDebug(
   // CHANNEL section
   ctx.font = '11px "Courier New", monospace';
   ctx.fillStyle = '#336644';
-  ctx.fillText('CHANNEL', 158, 80);
+  ctx.fillText('CHANNEL (B)', 158, 80);
   drawSegmentDisplay(ctx, 155, 135, String(activeChannel), isPowered);
 
   // Second divider
@@ -155,7 +155,7 @@ function drawDebug(
 
   ctx.font = '11px "Courier New", monospace';
   ctx.fillStyle = '#2A6640';
-  ctx.fillText('SQUEEZE → POWER      GRIP NEXT → CH+', 36, H - pad - 16);
+  ctx.fillText('A BUTTON → POWER      B BUTTON → CH+', 36, H - pad - 16);
 
   drawScanlines(ctx);
   tex.needsUpdate = true;
@@ -172,12 +172,12 @@ export class DebugOverlaySystem extends createSystem({
     this.ctx = ctx;
     this.tex = tex;
 
-    const geo = new PlaneGeometry(0.60, 0.40);
+    const geo = new PlaneGeometry(0.90, 0.60);
     const mat = new MeshBasicMaterial({ map: tex, transparent: true });
     const mesh = new Mesh(geo, mat);
     // Position to the right of the TV, like a side control panel
-    mesh.position.set(0.90, 0.55, -1.70);
-    mesh.rotation.y = -0.35;
+    mesh.position.set(1.1, 0.4, -1.1);
+    mesh.rotation.y = -0.6;
     this.world.scene.add(mesh);
   }
 

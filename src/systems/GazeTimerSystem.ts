@@ -9,7 +9,7 @@ import {
 } from '@iwsdk/core';
 import { TVState } from '../components.js';
 
-const GAZE_BUILD_TIME = 6.0;
+const GAZE_BUILD_TIME = 30;
 const GAZE_FADE_TIME = 3.0;
 const GAZE_DOT_THRESHOLD = 0.96; // ~16° half-angle
 const TV_SCREEN_POS = new Vector3(-0.12, 0.35, -1.394);
@@ -54,7 +54,7 @@ const fragmentShader = /* glsl */ `
     color *= noise * 0.8 + 0.2;
 
     // Sparse pixels: only show noise above threshold so it feels like static not solid color
-    float alpha = uIntensity * smoothstep(0.28, 0.62, noise) * 0.75;
+    float alpha = uIntensity * smoothstep(0.28, 0.62, noise) * 0.9;
     gl_FragColor = vec4(color, alpha);
   }
 `;

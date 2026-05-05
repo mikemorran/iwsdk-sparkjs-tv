@@ -44,6 +44,7 @@ World.create(container, {
     far: 50,
   },
 }).then(async (world) => {
+
   // ── Cross-system signals ──────────────────────────────────────────────────
   (world.globals as Record<string, unknown>).remotePowerToggle = signal<number>(0);
   (world.globals as Record<string, unknown>).remoteChannelNext = signal<number>(0);
@@ -103,6 +104,7 @@ World.create(container, {
     .registerSystem(RoomColorSystem)
     .registerSystem(DebugOverlaySystem)
     .registerSystem(AntennaeLightningSystem);
+
 
   // ── Landing screen wiring ─────────────────────────────────────────────────
   const overlay = document.getElementById('landing-overlay');
